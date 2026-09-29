@@ -40,8 +40,6 @@ jobs:
         run: |
           npm ci
           npm publish --access public --provenance
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: GitHub release
         run: gh release create "$GITHUB_REF_NAME" --verify-tag --generate-notes
