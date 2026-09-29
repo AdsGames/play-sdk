@@ -91,6 +91,9 @@ if(ADSGAMES_PLAY_BUILD_TESTS AND NOT EMSCRIPTEN)
 
   add_executable(play_test tests/play_test.cpp)
   target_link_libraries(play_test PRIVATE adsgames::play)
+  target_compile_definitions(play_test PRIVATE
+    PLAY_TEST_STATE_DIR="${CMAKE_CURRENT_BINARY_DIR}/play-test-state"
+  )
   add_test(NAME play_test COMMAND play_test)
   set_tests_properties(play_test PROPERTIES SKIP_RETURN_CODE 77)
 endif()

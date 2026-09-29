@@ -85,7 +85,8 @@ std::string multiplayer_url_for(const std::string& base_url)
     if (url.starts_with("https://")) {
         return "wss://" + url.substr(8);
     }
-    if (url.starts_with("http://")) {
+    // A local play server, e.g. http://127.0.0.1:8080
+    if (url.starts_with("http://")) { // NOSONAR(cpp:S5332) matches the URL, sends nothing
         return "ws://" + url.substr(7);
     }
 

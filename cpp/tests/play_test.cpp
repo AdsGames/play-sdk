@@ -160,8 +160,9 @@ void test_game(const std::string& url, const std::string& game, const std::strin
 
 int main()
 {
-    // Keep the shared login and game state away from the real ones
-    const auto state_dir = std::filesystem::temp_directory_path() / "adsgames-play-test";
+    // Keep the shared login and game state away from the real ones, in the
+    // build folder rather than a folder other users can write to
+    const std::filesystem::path state_dir = PLAY_TEST_STATE_DIR;
     std::filesystem::remove_all(state_dir);
 #if defined(_WIN32)
     _putenv_s("ADSGAMES_PLAY_LOGIN_DIR", state_dir.string().c_str());
