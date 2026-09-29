@@ -1,0 +1,93 @@
+name: "CI"
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+  workflow_call:
+
+permissions:
+  contents: read
+  packages: read
+
+jobs:
+  sdk:
+    name: "SDKs"
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: play
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      # Values for the throwaway CI server only
+      JWT_SECRET: ci-secret
+      API_KEY: ci-key
+      # The play image is private, so pull requests from forks run without a server
+      WITH_SERVER: ${{ github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository }}
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: js/package-lock.json
+
+      - name: Check versions match
+        run: |
+          js=$(node -p 'require("./js/package.json").version')
+          cpp=$(sed -n 's/^project(adsgames_play VERSION \([0-9.]*\).*/\1/p' cpp/CMakeLists.txt)
+          echo "js $js, cpp $cpp"
+          test "$js" = "$cpp"
+
+      # The SDK tests run against a real server, so the API and SDKs can not drift
+      - name: Start play
+        if: env.WITH_SERVER == 'true'
+        run: |
+          echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
+          docker run -d --name play --network host \
+            -e DATABASE_URL="postgres://postgres:postgres@localhost:5432/play?sslmode=disable" \
+            -e JWT_SECRET -e API_KEY -e SCORE_INTERVAL=0 \
+            ghcr.io/adsgames/play:main
+          for _ in $(seq 1 60); do curl -sf localhost:8080/healthz && break; sleep 1; done
+          curl -sf -X PUT -H "X-Api-Key: $API_KEY" localhost:8080/games/sdk-test/manifest -d @scripts/sdk-test.json
+          echo "PLAY_URL=http://127.0.0.1:8080" >> "$GITHUB_ENV"
+          echo "PLAY_TOKEN=$(python3 scripts/dev-token.py)" >> "$GITHUB_ENV"
+
+      - name: JS SDK
+        working-directory: js
+        run: |
+          npm ci
+          npm run typecheck
+          npm test
+
+      - name: C++ SDK
+        run: |
+          sudo apt-get update && sudo apt-get install -y libssl-dev
+          cmake -S cpp -B cpp/build
+          cmake --build cpp/build -j
+          # With a server, run directly so an unreachable server fails instead of skipping
+          if [ "$WITH_SERVER" = "true" ]; then ./cpp/build/play_test; else ctest --test-dir cpp/build --output-on-failure; fi
+
+      - uses: mymindstorm/setup-emsdk@v16
+        with:
+          version: 6.0.10
+          actions-cache-folder: emsdk-cache
+
+      - name: C++ SDK (emscripten)
+        run: |
+          emcmake cmake -S cpp -B cpp/build-web
+          cmake --build cpp/build-web -j
+
+      - name: Server log
+        if: failure() && env.WITH_SERVER == 'true'
+        run: docker logs play

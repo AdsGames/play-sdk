@@ -1,0 +1,49 @@
+name: "Release"
+
+on:
+  push:
+    tags:
+      - v*
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: "Test"
+    uses: ./.github/workflows/ci.yml
+    permissions:
+      contents: read
+      packages: read
+
+  release:
+    name: "Release ${{ github.ref_name }}"
+    needs: test
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      id-token: write
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          registry-url: https://registry.npmjs.org
+
+      - name: Check tag matches versions
+        run: |
+          test "v$(node -p 'require("./js/package.json").version')" = "$GITHUB_REF_NAME"
+          test "v$(sed -n 's/^project(adsgames_play VERSION \([0-9.]*\).*/\1/p' cpp/CMakeLists.txt)" = "$GITHUB_REF_NAME"
+
+      - name: Publish @adsgames/play
+        working-directory: js
+        run: |
+          npm ci
+          npm publish --access public --provenance
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: GitHub release
+        run: gh release create "$GITHUB_REF_NAME" --verify-tag --generate-notes
+        env:
+          GH_TOKEN: ${{ github.token }}
