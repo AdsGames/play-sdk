@@ -2,6 +2,8 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "types": [],
+    // Browsers the SDK supports, tests may use newer APIs
+    "lib": ["ES2022", "DOM"],
     "noEmit": false,
     "declaration": true,
     "outDir": "dist",
