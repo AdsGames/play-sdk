@@ -35,7 +35,7 @@ jobs:
       # The play image is private, so pull requests from forks run without a server
       WITH_SERVER: ${{ github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository }}
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: actions/setup-node@v6
         with:
           node-version: 24
@@ -68,6 +68,8 @@ jobs:
         run: |
           npm ci
           npm run typecheck
+          npm run lint
+          npm run format:check
           npm test
 
       - name: C++ SDK

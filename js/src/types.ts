@@ -56,6 +56,32 @@ export interface Achievement {
   unlockedAt: string | null;
 }
 
+// Unlocks achievement `key` once the game's stat reaches `atLeast`, see
+// PlayGame.addStat()
+export interface StatRule {
+  key: string;
+  stat: string;
+  atLeast: number;
+}
+
+// Code for the player to enter on adsgames.net/link, see PlayClient.link()
+export interface LinkCode {
+  // Short code to show, e.g. "BCDF-GHJK"
+  userCode: string;
+  // Page where the player enters the code
+  verificationUri: string;
+  // The same page with the code filled in, e.g. for a QR code or a browser
+  verificationUriComplete: string;
+  // Seconds until the code runs out
+  expiresIn: number;
+}
+
+// The player a device was linked to
+export interface Linked {
+  userId: string;
+  username: string;
+}
+
 export interface UnlockResult {
   // False when the player already had it
   newlyUnlocked: boolean;

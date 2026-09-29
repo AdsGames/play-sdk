@@ -76,10 +76,7 @@ export class Multiplayer<T = unknown> {
 
   private readonly socket: WebSocket;
 
-  private readonly handlers = new Map<
-    keyof MultiplayerEvents<T>,
-    Set<Handler<never>>
-  >();
+  private readonly handlers = new Map<keyof MultiplayerEvents<T>, Set<Handler<never>>>();
 
   private constructor(options: MultiplayerOptions, first: object) {
     const Socket = options.WebSocket ?? globalThis.WebSocket;
@@ -112,9 +109,7 @@ export class Multiplayer<T = unknown> {
   }
 
   // Connect and join the room with the given code, codes are case insensitive
-  public static join<T = unknown>(
-    options: MultiplayerOptions & { code: string },
-  ): Multiplayer<T> {
+  public static join<T = unknown>(options: MultiplayerOptions & { code: string }): Multiplayer<T> {
     return new Multiplayer<T>(options, { type: "join", code: options.code.toUpperCase() });
   }
 

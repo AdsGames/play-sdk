@@ -1,1 +1,1 @@
-{"leaderboards":[{"key":"high-score","title":"High score"}],"achievements":[{"key":"first-win","title":"First win"}]}
+{"leaderboards":[{"key":"high-score","title":"High score"}],"achievements":[{"key":"first-win","title":"First win"},{"key":"ten-wins","title":"Ten wins","stat":"wins","atLeast":10}]}

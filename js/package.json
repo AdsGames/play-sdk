@@ -1,6 +1,6 @@
 {
   "name": "@adsgames/play",
-  "version": "0.1.0",
+  "version": "0.3.0",
   "description": "Leaderboards, achievements and online multiplayer for A.D.S. Games",
   "license": "MIT",
   "type": "module",
@@ -24,11 +24,16 @@
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
     "typecheck": "tsc --noEmit",
+    "lint": "oxlint --deny-warnings src test",
+    "format": "oxfmt src test",
+    "format:check": "oxfmt --check src test",
     "test": "node --test test/*.test.ts",
     "prepare": "npm run build"
   },
   "devDependencies": {
     "@types/node": "^24.0.0",
+    "oxfmt": "^0.71.0",
+    "oxlint": "^1.86.0",
     "typescript": "^5.9.3"
   },
   "engines": {
