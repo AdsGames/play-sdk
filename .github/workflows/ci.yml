@@ -90,4 +90,5 @@ jobs:
 
       - name: Server log
         if: failure() && env.WITH_SERVER == 'true'
-        run: docker logs play
+        # The container is missing when the image pull failed
+        run: docker logs play || true
