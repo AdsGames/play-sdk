@@ -24,11 +24,16 @@
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
     "typecheck": "tsc --noEmit",
+    "lint": "oxlint --deny-warnings src test",
+    "format": "oxfmt src test",
+    "format:check": "oxfmt --check src test",
     "test": "node --test test/*.test.ts",
     "prepare": "npm run build"
   },
   "devDependencies": {
     "@types/node": "^24.0.0",
+    "oxfmt": "^0.71.0",
+    "oxlint": "^1.86.0",
     "typescript": "^5.9.3"
   },
   "engines": {

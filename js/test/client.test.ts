@@ -49,7 +49,10 @@ describe("PlayClient", () => {
 
     const res = await play.submitScore("fastest-win", 900, { moves: 80 });
     assert.equal(res.improved, true);
-    assert.equal(calls[0]?.url, "https://play.example/games/freecell/leaderboards/fastest-win/scores");
+    assert.equal(
+      calls[0]?.url,
+      "https://play.example/games/freecell/leaderboards/fastest-win/scores",
+    );
     assert.equal(calls[0]?.method, "POST");
     assert.equal(calls[0]?.headers.Authorization, "Bearer abc");
     assert.deepEqual(calls[0]?.body, { value: 900, meta: { moves: 80 } });
@@ -96,14 +99,20 @@ describe("PlayClient", () => {
     const { fetch } = fakeFetch(404, "<html>Not found</html>");
     const play = new PlayClient({ game: "freecell", fetch });
 
-    await assert.rejects(play.session(), (err: unknown) => err instanceof PlayError && err.status === 404);
+    await assert.rejects(
+      play.session(),
+      (err: unknown) => err instanceof PlayError && err.status === 404,
+    );
   });
 
   it("reports network failures with status 0", async () => {
     const fetch = (() => Promise.reject(new Error("offline"))) as typeof globalThis.fetch;
     const play = new PlayClient({ game: "freecell", fetch });
 
-    await assert.rejects(play.session(), (err: unknown) => err instanceof PlayError && err.status === 0);
+    await assert.rejects(
+      play.session(),
+      (err: unknown) => err instanceof PlayError && err.status === 0,
+    );
   });
 
   it("builds the multiplayer URL next to the API", () => {

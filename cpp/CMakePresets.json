@@ -1,0 +1,85 @@
+{
+  "version": 3,
+  "cmakeMinimumRequired": {
+    "major": 3,
+    "minor": 24,
+    "patch": 0
+  },
+  "configurePresets": [
+    {
+      "name": "debug",
+      "description": "Debug build",
+      "binaryDir": "${sourceDir}/build/debug",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug"
+      }
+    },
+    {
+      "name": "release",
+      "description": "Release build",
+      "binaryDir": "${sourceDir}/build/release",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release"
+      }
+    },
+    {
+      "name": "tidy",
+      "inherits": "debug",
+      "description": "Debug build checked by clang-tidy",
+      "binaryDir": "${sourceDir}/build/tidy",
+      "cacheVariables": {
+        "ADSGAMES_PLAY_CLANG_TIDY": "ON"
+      }
+    },
+    {
+      "name": "web",
+      "description": "Emscripten build, needs EMSDK set by emsdk_env",
+      "binaryDir": "${sourceDir}/build/web",
+      "toolchainFile": "$env{EMSDK}/upstream/emscripten/cmake/Modules/Platform/Emscripten.cmake",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release"
+      }
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "debug",
+      "description": "Build a debug build",
+      "displayName": "debug",
+      "configurePreset": "debug",
+      "jobs": 0
+    },
+    {
+      "name": "release",
+      "description": "Build a release build",
+      "displayName": "release",
+      "configurePreset": "release",
+      "jobs": 0
+    },
+    {
+      "name": "tidy",
+      "description": "Build and check every file with clang-tidy",
+      "displayName": "tidy",
+      "configurePreset": "tidy",
+      "cleanFirst": true,
+      "jobs": 0
+    },
+    {
+      "name": "web",
+      "description": "Build for the web",
+      "displayName": "web",
+      "configurePreset": "web",
+      "jobs": 0
+    }
+  ],
+  "testPresets": [
+    {
+      "name": "debug",
+      "description": "Run the tests, skipped without a play server",
+      "configurePreset": "debug",
+      "output": {
+        "outputOnFailure": true
+      }
+    }
+  ]
+}
