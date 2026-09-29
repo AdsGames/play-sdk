@@ -1,6 +1,6 @@
 {
   "name": "@adsgames/play",
-  "version": "0.1.0",
+  "version": "0.3.0",
   "description": "Leaderboards, achievements and online multiplayer for A.D.S. Games",
   "license": "MIT",
   "type": "module",

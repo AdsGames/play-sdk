@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.24)
 
-project(adsgames_play VERSION 0.1.0 LANGUAGES CXX)
+project(adsgames_play VERSION 0.3.0 LANGUAGES CXX)
 
 option(ADSGAMES_PLAY_NETWORK "Build network support, off gives a client whose requests all fail" ON)
 option(ADSGAMES_PLAY_BUILD_TESTS "Build tests" ${PROJECT_IS_TOP_LEVEL})
